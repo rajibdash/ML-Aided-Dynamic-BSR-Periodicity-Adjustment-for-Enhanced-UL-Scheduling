@@ -35,7 +35,10 @@ def _extract_baseline_value(model: BaselineModel | Mapping[str, object]) -> floa
         return model.baseline_periodicity_ms
     if not isinstance(model, Mapping) or "baseline_periodicity_ms" not in model:
         raise ValueError("Model must contain 'baseline_periodicity_ms'.")
-    return float(model["baseline_periodicity_ms"])
+    try:
+        return float(model["baseline_periodicity_ms"])
+    except (TypeError, ValueError) as exc:
+        raise ValueError("'baseline_periodicity_ms' must be numeric.") from exc
 
 
 def evaluate_baseline(model: BaselineModel | Mapping[str, object], samples: Iterable[TrainingSample]) -> dict:

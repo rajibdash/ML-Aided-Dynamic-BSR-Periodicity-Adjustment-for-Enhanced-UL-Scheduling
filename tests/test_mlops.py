@@ -32,6 +32,8 @@ class MLOpsPipelineTest(unittest.TestCase):
             evaluate_baseline({}, self.samples)
         with self.assertRaises(ValueError):
             evaluate_baseline(None, self.samples)  # type: ignore[arg-type]
+        with self.assertRaises(ValueError):
+            evaluate_baseline({"baseline_periodicity_ms": "not-a-number"}, self.samples)
 
     def test_report_contains_research_goal(self) -> None:
         model = train_baseline(self.samples)

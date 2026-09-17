@@ -1,6 +1,6 @@
 # ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling
 
-This repository includes a minimal **Agent** module (`agent.py`) and a minimal **mlops** module (`mlops.py`) for ML-aided dynamic BSR periodicity experiments.
+This repository includes a minimal **agent** module (`agent.py`) and a minimal **mlops** module (`mlops.py`) for ML-aided dynamic BSR periodicity experiments.
 
 ## Setup
 
@@ -15,7 +15,7 @@ Primary goal:
 
 - Reduce uplink latency by dynamically adapting BSR periodicity based on queue, growth, and load conditions while maintaining stable control signaling overhead.
 
-## Agent Module
+## agent Module
 
 File: `agent.py`
 
