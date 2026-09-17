@@ -13,7 +13,7 @@ Primary goal:
 File: `agent.py`
 
 - `BSRState`: input state for periodicity decisions.
-- `DynamicBSRAgent`: recommends BSR periodicity (ms) with bounded outputs.
+- `DynamicBSRAgent`: recommends BSR periodicity (ms) with bounded outputs, using more frequent BSR reporting under high-load/high-urgency conditions.
 
 ## ML Ops Module
 

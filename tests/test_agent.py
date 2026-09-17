@@ -23,6 +23,16 @@ class DynamicBSRAgentTest(unittest.TestCase):
         self.assertGreaterEqual(recommendation, 5)
         self.assertLessEqual(recommendation, 80)
 
+    def test_high_load_makes_recommendation_more_aggressive(self) -> None:
+        agent = DynamicBSRAgent()
+        normal_load = BSRState(30_000, 18.0, 0.4, 0.80)
+        high_load = BSRState(30_000, 18.0, 0.4, 0.90)
+
+        normal_periodicity = agent.recommend_periodicity(normal_load)
+        high_load_periodicity = agent.recommend_periodicity(high_load)
+
+        self.assertGreater(normal_periodicity, high_load_periodicity)
+
 
 if __name__ == "__main__":
     unittest.main()
