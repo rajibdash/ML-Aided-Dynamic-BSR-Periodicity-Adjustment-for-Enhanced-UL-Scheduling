@@ -5,7 +5,7 @@ This repository contains a Python-first research scaffold for exploring the idea
 ## Repository structure
 
 ```text
-/home/runner/work/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling
+.
 ├── configs/                 # Experiment, model, and evaluation configs
 ├── data/
 │   ├── processed/           # Derived datasets and split outputs
@@ -54,19 +54,19 @@ This repository contains a Python-first research scaffold for exploring the idea
 Create a sample dataset:
 
 ```bash
-python scripts/prepare_dataset.py       --config /home/runner/work/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling/configs/dataset.sample.json
+python scripts/prepare_dataset.py       --config configs/dataset.sample.json
 ```
 
 Train a baseline predictor:
 
 ```bash
-python scripts/train_model.py       --config /home/runner/work/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling/configs/model.sample.json
+python scripts/train_model.py       --config configs/model.sample.json
 ```
 
 Run fixed-vs-adaptive evaluation:
 
 ```bash
-python scripts/run_evaluation.py       --config /home/runner/work/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling/configs/evaluation.sample.json
+python scripts/run_evaluation.py       --config configs/evaluation.sample.json
 ```
 
 ## Testing
@@ -74,7 +74,7 @@ python scripts/run_evaluation.py       --config /home/runner/work/ML-Aided-Dynam
 Run repository tests with:
 
 ```bash
-python -m unittest discover -s /home/runner/work/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling/ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling/tests -p "test_*.py"
+python -m unittest discover -s tests -p "test_*.py"
 ```
 
 ## Notes

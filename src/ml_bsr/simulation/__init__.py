@@ -49,16 +49,17 @@ def simulate_bsr_schedule(
     total_bsr_reports = 0
     ineffective_bsr_reports = 0
     selected_periodicities = [next_periodicity]
-    last_seen_arrival: float | None = None
+    last_seen_arrival_by_ue: dict[str, float] = {}
 
     while next_arrival_index < len(arrival_times) or pending_arrivals:
         next_arrival_time = arrival_times[next_arrival_index] if next_arrival_index < len(arrival_times) else inf
 
         if next_arrival_time <= current_time:
+            arrival = normalized[next_arrival_index]
             pending_arrivals.append(next_arrival_time)
-            if last_seen_arrival is not None:
-                observed_interarrivals.append(next_arrival_time - last_seen_arrival)
-            last_seen_arrival = next_arrival_time
+            if arrival.ue_id in last_seen_arrival_by_ue:
+                observed_interarrivals.append(next_arrival_time - last_seen_arrival_by_ue[arrival.ue_id])
+            last_seen_arrival_by_ue[arrival.ue_id] = next_arrival_time
             next_arrival_index += 1
             continue
 

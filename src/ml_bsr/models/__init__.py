@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from importlib import import_module
 from statistics import mean
 
+from ml_bsr.features import build_feature_vector
+
 
 class ModelDependencyError(RuntimeError):
     """Raised when an optional ML dependency is unavailable."""
@@ -14,7 +16,7 @@ class Predictor(ABC):
     name: str
 
     @abstractmethod
-    def fit(self, features: list[list[float]], targets: list[float]) -> None:
+    def fit(self, histories: list[list[float]], targets: list[float]) -> None:
         raise NotImplementedError
 
     @abstractmethod
@@ -31,7 +33,7 @@ class NaiveLastValuePredictor(Predictor):
     name: str = "naive_last_value"
     fitted_: bool = False
 
-    def fit(self, features: list[list[float]], targets: list[float]) -> None:
+    def fit(self, histories: list[list[float]], targets: list[float]) -> None:
         self.fitted_ = True
 
     def predict(self, history_ms: list[float]) -> float:
@@ -49,7 +51,7 @@ class MovingAveragePredictor(Predictor):
     name: str = "moving_average"
     fitted_: bool = False
 
-    def fit(self, features: list[list[float]], targets: list[float]) -> None:
+    def fit(self, histories: list[list[float]], targets: list[float]) -> None:
         self.fitted_ = True
 
     def predict(self, history_ms: list[float]) -> float:
@@ -81,15 +83,16 @@ class OptionalBackendPredictor(Predictor):
                 f"Model '{self.name}' requires optional dependency '{self.dependency_module}'."
             ) from exc
 
-    def fit(self, features: list[list[float]], targets: list[float]) -> None:
+    def fit(self, histories: list[list[float]], targets: list[float]) -> None:
         estimator_cls = self._load_estimator()
         self.estimator_ = estimator_cls(**self.estimator_kwargs)
+        features = [build_feature_vector(history) for history in histories]
         self.estimator_.fit(features, targets)
 
     def predict(self, history_ms: list[float]) -> float:
         if self.estimator_ is None:
             raise RuntimeError(f"Model '{self.name}' has not been fitted")
-        feature_row = [[history_ms[-1], mean(history_ms), min(history_ms), max(history_ms), max(history_ms) - min(history_ms), float(len(history_ms))]]
+        feature_row = [build_feature_vector(history_ms)]
         value = self.estimator_.predict(feature_row)[0]
         return float(value)
 
@@ -130,10 +133,59 @@ def build_model(name: str, **params: object) -> Predictor:
             estimator_kwargs=params,
         )
     if normalized == 'lstm':
-        return OptionalBackendPredictor(
-            name='lstm',
-            dependency_module='tensorflow',
-            estimator_path='tensorflow.keras.wrappers.scikit_learn.KerasRegressor',
-            estimator_kwargs=params,
-        )
+        return TensorFlowLSTMPredictor(**params)
     raise ValueError(f'Unsupported model: {name}')
+
+
+@dataclass
+class TensorFlowLSTMPredictor(Predictor):
+    epochs: int = 5
+    batch_size: int = 8
+    name: str = "lstm"
+    model_: object | None = None
+    history_length_: int | None = None
+
+    def fit(self, histories: list[list[float]], targets: list[float]) -> None:
+        try:
+            import numpy as np
+            import tensorflow as tf
+        except Exception as exc:
+            raise ModelDependencyError("Model 'lstm' requires optional dependency 'tensorflow'.") from exc
+
+        if not histories:
+            raise ValueError("histories must not be empty")
+        self.history_length_ = len(histories[0])
+        x_train = np.array(histories, dtype="float32").reshape(len(histories), self.history_length_, 1)
+        y_train = np.array(targets, dtype="float32")
+
+        model = tf.keras.Sequential(
+            [
+                tf.keras.layers.Input(shape=(self.history_length_, 1)),
+                tf.keras.layers.LSTM(16),
+                tf.keras.layers.Dense(1),
+            ]
+        )
+        model.compile(optimizer="adam", loss="mse")
+        model.fit(x_train, y_train, epochs=self.epochs, batch_size=self.batch_size, verbose=0)
+        self.model_ = model
+
+    def predict(self, history_ms: list[float]) -> float:
+        if self.model_ is None or self.history_length_ is None:
+            raise RuntimeError("Model 'lstm' has not been fitted")
+        try:
+            import numpy as np
+        except Exception as exc:
+            raise ModelDependencyError("Model 'lstm' requires optional dependency 'numpy'.") from exc
+        sequence = history_ms[-self.history_length_:]
+        if len(sequence) < self.history_length_:
+            sequence = ([sequence[0]] * (self.history_length_ - len(sequence))) + sequence
+        batch = np.array(sequence, dtype="float32").reshape(1, self.history_length_, 1)
+        return float(self.model_.predict(batch, verbose=0)[0][0])
+
+    def describe(self) -> dict[str, object]:
+        return {
+            "name": self.name,
+            "epochs": self.epochs,
+            "batch_size": self.batch_size,
+            "fitted": self.model_ is not None,
+        }

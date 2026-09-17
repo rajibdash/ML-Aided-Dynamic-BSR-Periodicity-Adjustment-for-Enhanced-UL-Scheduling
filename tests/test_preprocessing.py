@@ -5,6 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from ml_bsr.data_ingestion import PacketArrival
+from ml_bsr.data_ingestion import generate_synthetic_trace
 from ml_bsr.preprocessing import build_supervised_records, extract_interarrival_times, normalize_arrivals, split_records
 
 
@@ -26,6 +27,12 @@ class PreprocessingTests(unittest.TestCase):
         self.assertEqual(len(splits['train']), 1)
         self.assertEqual(len(splits['validation']), 0)
         self.assertEqual(len(splits['test']), 2)
+
+    def test_generate_synthetic_trace_is_seeded_and_positive(self) -> None:
+        first = generate_synthetic_trace(count=3, base_interval_ms=1.0, jitter_ms=5.0, seed=11)
+        second = generate_synthetic_trace(count=3, base_interval_ms=1.0, jitter_ms=5.0, seed=11)
+        self.assertEqual(first, second)
+        self.assertTrue(all(item.time_ms > 0.0 for item in first))
 
 
 if __name__ == '__main__':

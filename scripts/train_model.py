@@ -25,12 +25,13 @@ def main() -> None:
     config = load_json(args.config)
     dataset = load_json(project_path(config["dataset_path"]))
     records = dataset.get("records", [])
-    features, targets = build_feature_matrix(records)
+    histories = [list(record["history_ms"]) for record in records]
+    _, targets = build_feature_matrix(records)
 
     model_config = config.get("model", {})
     model = build_model(model_config.get("name", "moving_average"), **model_config.get("params", {}))
-    model.fit(features, targets)
-    predictions = [model.predict(record["history_ms"]) for record in records]
+    model.fit(histories, targets)
+    predictions = [model.predict(history) for history in histories]
 
     summary = {
         "model": model.describe(),
