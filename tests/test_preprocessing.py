@@ -1,4 +1,8 @@
 import unittest
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from ml_bsr.data_ingestion import PacketArrival
 from ml_bsr.preprocessing import build_supervised_records, extract_interarrival_times, normalize_arrivals, split_records
