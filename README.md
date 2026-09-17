@@ -2,6 +2,13 @@
 
 This repository now includes a minimal **Agent** module and a minimal **ML Ops (`mlops.py`)** module for ML-aided dynamic BSR periodicity experiments.
 
+## Setup
+
+- Python 3.10+ recommended.
+- No third-party dependencies are required for the examples and tests in this repository.
+- Run tests with:
+  - `python -m unittest discover -s tests -p "test_*.py"`
+
 ## Research Goal
 
 Primary goal:
