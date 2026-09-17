@@ -38,6 +38,14 @@ def build_adaptive_training_records(
     window_size: int,
     ue_id: str | None = None,
 ) -> list[dict[str, list[float] | float]]:
-    filtered_arrivals = [arrival for arrival in arrivals if ue_id is None or arrival.ue_id == ue_id]
-    interarrivals = extract_interarrival_times(filtered_arrivals)
-    return build_supervised_records(interarrivals, window_size=window_size)
+    if ue_id is not None:
+        filtered_arrivals = [arrival for arrival in arrivals if arrival.ue_id == ue_id]
+        interarrivals = extract_interarrival_times(filtered_arrivals)
+        return build_supervised_records(interarrivals, window_size=window_size)
+
+    records: list[dict[str, list[float] | float]] = []
+    for current_ue_id in sorted({arrival.ue_id for arrival in arrivals}):
+        filtered_arrivals = [arrival for arrival in arrivals if arrival.ue_id == current_ue_id]
+        interarrivals = extract_interarrival_times(filtered_arrivals)
+        records.extend(build_supervised_records(interarrivals, window_size=window_size))
+    return records

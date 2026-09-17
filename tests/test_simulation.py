@@ -47,15 +47,31 @@ class SimulationTests(unittest.TestCase):
         self.assertEqual(result.total_packets, 4)
         self.assertEqual(result.packet_latencies_ms, [4.0, 4.0, 4.0, 3.0])
 
-    def test_adaptive_training_records_reject_multi_ue_arrivals(self) -> None:
+    def test_adaptive_training_records_can_target_single_ue(self) -> None:
         arrivals = [
             PacketArrival(time_ms=1.0, ue_id='ue-a'),
             PacketArrival(time_ms=2.0, ue_id='ue-a'),
+            PacketArrival(time_ms=4.0, ue_id='ue-a'),
             PacketArrival(time_ms=3.0, ue_id='ue-b'),
             PacketArrival(time_ms=4.0, ue_id='ue-b'),
         ]
-        with self.assertRaises(ValueError):
-            build_adaptive_training_records(arrivals, window_size=2)
+        records = build_adaptive_training_records(arrivals, window_size=1, ue_id='ue-a')
+        self.assertEqual(records, [{'history_ms': [1.0], 'target_ms': 2.0}])
+
+    def test_adaptive_training_records_combine_multi_ue_histories_by_default(self) -> None:
+        arrivals = [
+            PacketArrival(time_ms=1.0, ue_id='ue-a'),
+            PacketArrival(time_ms=3.0, ue_id='ue-a'),
+            PacketArrival(time_ms=6.0, ue_id='ue-a'),
+            PacketArrival(time_ms=2.0, ue_id='ue-b'),
+            PacketArrival(time_ms=5.0, ue_id='ue-b'),
+            PacketArrival(time_ms=9.0, ue_id='ue-b'),
+        ]
+        records = build_adaptive_training_records(arrivals, window_size=1)
+        self.assertEqual(records, [
+            {'history_ms': [2.0], 'target_ms': 3.0},
+            {'history_ms': [3.0], 'target_ms': 4.0},
+        ])
 
 
 if __name__ == '__main__':
