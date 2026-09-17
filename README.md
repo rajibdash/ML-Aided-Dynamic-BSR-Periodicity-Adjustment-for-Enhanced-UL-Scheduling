@@ -21,6 +21,7 @@ The accompanying paper and supporting reading notes live under `docs/`.
 ├── docs/
 │   ├── figures/                # Architecture or result figures
 │   ├── ML-Aided_Dynamic_BSR_Periodicity_Adjustment_for_En.pdf
+│   ├── PAPER_UNDERSTANDING_GUIDE.md
 │   └── architecture.md
 ├── notebooks/                  # Exploratory analysis and reproduction notebooks
 ├── results/                    # Generated metrics, plots, and summaries
