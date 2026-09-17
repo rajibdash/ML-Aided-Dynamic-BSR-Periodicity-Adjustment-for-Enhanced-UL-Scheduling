@@ -15,6 +15,17 @@ File: `agent.py`
 - `BSRState`: input state for periodicity decisions.
 - `DynamicBSRAgent`: recommends BSR periodicity (ms) with bounded outputs, using more frequent BSR reporting under high-load/high-urgency conditions.
 
+Example:
+
+```python
+from agent import BSRState, DynamicBSRAgent
+
+agent = DynamicBSRAgent()
+state = BSRState(queue_bytes=60000, avg_ul_latency_ms=24.0, buffer_growth_rate=0.5, cell_load_ratio=0.9)
+recommended_periodicity_ms = agent.recommend_periodicity(state)
+print(recommended_periodicity_ms)
+```
+
 ## ML Ops Module
 
 File: `mlops.py`
