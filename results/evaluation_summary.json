@@ -2,8 +2,8 @@
   "adaptive": {
     "metrics": {
       "average_latency_ms": 3.205292,
-      "effective_bsr_ratio": 0.545455,
-      "ineffective_bsr_reports": 20,
+      "effective_bsr_ratio": 0.533333,
+      "ineffective_bsr_reports": 21,
       "packet_latencies_ms": [
         1.705,
         3.101,
@@ -75,9 +75,10 @@
         5.0,
         5.0,
         5.0,
+        5.0,
         5.0
       ],
-      "total_bsr_reports": 44,
+      "total_bsr_reports": 45,
       "total_packets": 24
     },
     "policy": {
@@ -94,8 +95,8 @@
   "fixed_10ms": {
     "metrics": {
       "average_latency_ms": 5.288625,
-      "effective_bsr_ratio": 0.833333,
-      "ineffective_bsr_reports": 4,
+      "effective_bsr_ratio": 0.8,
+      "ineffective_bsr_reports": 5,
       "packet_latencies_ms": [
         1.705,
         3.101,
@@ -147,9 +148,10 @@
         10.0,
         10.0,
         10.0,
+        10.0,
         10.0
       ],
-      "total_bsr_reports": 24,
+      "total_bsr_reports": 25,
       "total_packets": 24
     },
     "policy": {
@@ -160,8 +162,8 @@
   "fixed_20ms": {
     "metrics": {
       "average_latency_ms": 11.121958,
-      "effective_bsr_ratio": 1.0,
-      "ineffective_bsr_reports": 0,
+      "effective_bsr_ratio": 0.923077,
+      "ineffective_bsr_reports": 1,
       "packet_latencies_ms": [
         11.705,
         3.101,
@@ -201,9 +203,10 @@
         20.0,
         20.0,
         20.0,
+        20.0,
         20.0
       ],
-      "total_bsr_reports": 12,
+      "total_bsr_reports": 13,
       "total_packets": 24
     },
     "policy": {
@@ -214,8 +217,8 @@
   "fixed_5ms": {
     "metrics": {
       "average_latency_ms": 3.205292,
-      "effective_bsr_ratio": 0.510638,
-      "ineffective_bsr_reports": 23,
+      "effective_bsr_ratio": 0.5,
+      "ineffective_bsr_reports": 24,
       "packet_latencies_ms": [
         1.705,
         3.101,
@@ -290,9 +293,10 @@
         5.0,
         5.0,
         5.0,
+        5.0,
         5.0
       ],
-      "total_bsr_reports": 47,
+      "total_bsr_reports": 48,
       "total_packets": 24
     },
     "policy": {

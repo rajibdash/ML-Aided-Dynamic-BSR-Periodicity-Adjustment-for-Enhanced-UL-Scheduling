@@ -38,14 +38,15 @@ class SimulationTests(unittest.TestCase):
 
     def test_simulation_preserves_global_time_order_across_ues(self) -> None:
         arrivals = [
-            PacketArrival(time_ms=12.0, ue_id='ue-b'),
-            PacketArrival(time_ms=3.0, ue_id='ue-a'),
+            PacketArrival(time_ms=12.0, ue_id='ue-a'),
+            PacketArrival(time_ms=13.0, ue_id='ue-a'),
+            PacketArrival(time_ms=2.0, ue_id='ue-b'),
             PacketArrival(time_ms=7.0, ue_id='ue-b'),
-            PacketArrival(time_ms=5.0, ue_id='ue-a'),
         ]
         result = simulate_bsr_schedule(arrivals, FixedPeriodicityPolicy(periodicity_ms=5.0))
         self.assertEqual(result.total_packets, 4)
-        self.assertEqual(len(result.packet_latencies_ms), 4)
+        self.assertEqual(result.packet_latencies_ms, [4.0, 4.0, 4.0, 3.0])
+        self.assertEqual(result.ineffective_bsr_reports, 1)
 
 
 if __name__ == '__main__':

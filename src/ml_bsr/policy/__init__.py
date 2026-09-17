@@ -11,6 +11,8 @@ VALID_BSR_PERIODICITIES_MS: tuple[float, ...] = (
 
 
 def select_bsr_periodicity(predicted_interarrival_ms: float, guard_factor: float = 0.9) -> float:
+    if not 0.0 < guard_factor <= 1.0:
+        raise ValueError("guard_factor must be in the range (0, 1]")
     if predicted_interarrival_ms <= 0.0:
         return VALID_BSR_PERIODICITIES_MS[0]
     if isinf(predicted_interarrival_ms):

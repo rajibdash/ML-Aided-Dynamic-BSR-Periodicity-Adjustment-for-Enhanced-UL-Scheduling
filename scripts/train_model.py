@@ -12,6 +12,8 @@ from ml_bsr.utils import dump_json, load_json, project_path
 
 
 def mean_absolute_error(actual: list[float], predicted: list[float]) -> float:
+    if len(actual) != len(predicted):
+        raise ValueError("actual and predicted must have the same length")
     if not actual:
         return 0.0
     return sum(abs(a - b) for a, b in zip(actual, predicted)) / len(actual)

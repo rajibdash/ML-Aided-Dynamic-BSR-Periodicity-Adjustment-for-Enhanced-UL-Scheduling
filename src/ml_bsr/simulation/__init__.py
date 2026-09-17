@@ -50,9 +50,12 @@ def simulate_bsr_schedule(
     ineffective_bsr_reports = 0
     selected_periodicities = [next_periodicity]
     last_seen_arrival_by_ue: dict[str, float] = {}
+    trailing_empty_report_counted = False
 
-    while next_arrival_index < len(arrival_times) or pending_arrivals:
+    while True:
         if current_time == inf:
+            break
+        if next_arrival_index >= len(arrival_times) and not pending_arrivals and trailing_empty_report_counted:
             break
         next_arrival_time = arrival_times[next_arrival_index] if next_arrival_index < len(arrival_times) else inf
 
@@ -70,8 +73,11 @@ def simulate_bsr_schedule(
             for pending_time in pending_arrivals:
                 latencies.append(round((current_time - pending_time) + grant_processing_ms, 6))
             pending_arrivals.clear()
+            trailing_empty_report_counted = False
         else:
             ineffective_bsr_reports += 1
+            if next_arrival_index >= len(arrival_times):
+                trailing_empty_report_counted = True
 
         next_periodicity = policy.next_periodicity(observed_interarrivals)
         selected_periodicities.append(next_periodicity)

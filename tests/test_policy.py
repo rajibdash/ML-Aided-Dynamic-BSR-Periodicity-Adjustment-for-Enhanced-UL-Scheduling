@@ -12,6 +12,12 @@ class PolicyTests(unittest.TestCase):
     def test_select_bsr_periodicity_uses_allowed_values(self) -> None:
         self.assertEqual(select_bsr_periodicity(18.0), 16.0)
         self.assertEqual(select_bsr_periodicity(0.5), 1.0)
+        self.assertEqual(select_bsr_periodicity(float('inf')), float('inf'))
+        self.assertEqual(select_bsr_periodicity(18.0, guard_factor=0.5), 5.0)
+
+    def test_invalid_guard_factor_is_rejected(self) -> None:
+        with self.assertRaises(ValueError):
+            select_bsr_periodicity(10.0, guard_factor=0.0)
 
     def test_adaptive_policy_bootstrap_then_predict(self) -> None:
         policy = AdaptivePeriodicityPolicy(predictor=MovingAveragePredictor(window=2), bootstrap_periodicity_ms=10.0)
