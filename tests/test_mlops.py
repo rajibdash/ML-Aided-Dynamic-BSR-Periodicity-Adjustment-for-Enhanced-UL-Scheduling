@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+from dataclasses import asdict
 from pathlib import Path
 
 from mlops import TrainingSample, evaluate_baseline, save_experiment_report, serialize_samples, train_baseline
@@ -18,7 +19,7 @@ class MLOpsPipelineTest(unittest.TestCase):
         model = train_baseline(self.samples)
         metrics = evaluate_baseline(model, self.samples)
 
-        self.assertEqual(model["trained_samples"], 3)
+        self.assertEqual(model.trained_samples, 3)
         self.assertEqual(metrics["evaluated_samples"], 3)
         self.assertGreaterEqual(metrics["mae"], 0.0)
 
@@ -42,7 +43,7 @@ class MLOpsPipelineTest(unittest.TestCase):
             report = json.loads(Path(saved_path).read_text(encoding="utf-8"))
             self.assertEqual(report["research_goal"], goal)
             self.assertIn("generated_at", report)
-            self.assertEqual(report["model"], model)
+            self.assertEqual(report["model"], asdict(model))
             self.assertEqual(report["metrics"], metrics)
 
     def test_serialize_samples_preserves_fields(self) -> None:
