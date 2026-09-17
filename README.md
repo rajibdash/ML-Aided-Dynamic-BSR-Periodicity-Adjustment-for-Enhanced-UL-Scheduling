@@ -14,13 +14,14 @@ This repository includes a minimal **agent** module (`agent.py`) and a minimal *
 Primary goal:
 
 - Reduce uplink latency by dynamically adapting BSR periodicity based on queue, growth, and load conditions while maintaining stable control signaling overhead.
+- In the current heuristic, when `cell_load_ratio > 0.85`, the agent lowers recommended periodicity to trigger more frequent BSR reporting.
 
 ## agent Module
 
 File: `agent.py`
 
 - `BSRState`: input state for periodicity decisions.
-- `DynamicBSRAgent`: recommends BSR periodicity (ms) with bounded outputs, using more frequent BSR reporting under high-load/high-urgency conditions.
+- `DynamicBSRAgent`: recommends BSR periodicity (ms) with bounded outputs and applies extra urgency when `cell_load_ratio > 0.85` to produce more frequent BSR reporting.
 
 Example:
 

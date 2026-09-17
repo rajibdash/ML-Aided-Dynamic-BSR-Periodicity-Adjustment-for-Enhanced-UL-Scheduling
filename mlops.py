@@ -78,7 +78,7 @@ def save_experiment_report(
     elif isinstance(metrics, Mapping):
         metrics_payload = dict(metrics)
     else:
-        raise ValueError("Metrics must be a mapping with JSON-serializable values.")
+        raise ValueError("Metrics must be an EvaluationMetrics instance or mapping with JSON-serializable values.")
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
