@@ -1,0 +1,11 @@
+{
+  "metrics": {
+    "mae_ms": 1.187684210526316
+  },
+  "model": {
+    "fitted": true,
+    "name": "moving_average",
+    "window": 3
+  },
+  "record_count": 19
+}
