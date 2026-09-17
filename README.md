@@ -1,6 +1,6 @@
 # ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling
 
-This repository now includes a minimal **Agent** module and a minimal **ML Ops** module for ML-aided dynamic BSR periodicity experiments.
+This repository now includes a minimal **Agent** module and a minimal **ML Ops (`mlops.py`)** module for ML-aided dynamic BSR periodicity experiments.
 
 ## Research Goal
 

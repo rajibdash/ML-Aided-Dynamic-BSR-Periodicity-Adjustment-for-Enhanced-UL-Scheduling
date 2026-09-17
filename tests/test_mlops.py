@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from mlops import TrainingSample, evaluate_baseline, save_experiment_report, train_baseline
+from mlops import TrainingSample, evaluate_baseline, save_experiment_report, serialize_samples, train_baseline
 
 
 class MLOpsPipelineTest(unittest.TestCase):
@@ -34,6 +34,23 @@ class MLOpsPipelineTest(unittest.TestCase):
             report = json.loads(Path(saved_path).read_text(encoding="utf-8"))
             self.assertEqual(report["research_goal"], goal)
             self.assertIn("generated_at", report)
+            self.assertEqual(report["model"], model)
+            self.assertEqual(report["metrics"], metrics)
+
+    def test_serialize_samples_preserves_fields(self) -> None:
+        serialized = serialize_samples(self.samples[:1])
+
+        self.assertEqual(
+            serialized,
+            [
+                {
+                    "latency_ms": 12,
+                    "buffer_growth_rate": 0.1,
+                    "cell_load_ratio": 0.45,
+                    "label_periodicity_ms": 40,
+                }
+            ],
+        )
 
 
 if __name__ == "__main__":
