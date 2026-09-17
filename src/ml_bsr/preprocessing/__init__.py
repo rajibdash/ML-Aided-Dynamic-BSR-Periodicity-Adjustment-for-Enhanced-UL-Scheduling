@@ -37,6 +37,8 @@ def split_records(
     records: list[dict[str, list[float] | float]],
     ratios: tuple[float, float, float] = (0.7, 0.15, 0.15),
 ) -> dict[str, list[dict[str, list[float] | float]]]:
+    if any(ratio < 0.0 or ratio > 1.0 for ratio in ratios):
+        raise ValueError("Split ratios must be between 0 and 1")
     if round(sum(ratios), 6) != 1.0:
         raise ValueError("Split ratios must sum to 1.0")
     total = len(records)

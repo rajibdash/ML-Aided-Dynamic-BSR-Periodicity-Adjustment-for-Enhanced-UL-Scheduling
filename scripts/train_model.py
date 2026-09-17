@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from ml_bsr.features import build_feature_matrix
 from ml_bsr.models import build_model
+from ml_bsr.preprocessing import split_records
 from ml_bsr.utils import dump_json, load_json, project_path
 
 
@@ -27,19 +28,29 @@ def main() -> None:
     config = load_json(args.config)
     dataset = load_json(project_path(config["dataset_path"]))
     records = dataset.get("records", [])
-    histories = [list(record["history_ms"]) for record in records]
-    _, targets = build_feature_matrix(records)
+    if not records:
+        raise ValueError("dataset must contain at least one record")
+
+    splits = split_records(records, tuple(config.get("split_ratios", [0.7, 0.15, 0.15])))
+    train_records = splits["train"] or records
+    evaluation_records = splits["validation"] or splits["test"] or train_records
+    histories = [list(record["history_ms"]) for record in train_records]
+    _, targets = build_feature_matrix(train_records)
 
     model_config = config.get("model", {})
     model = build_model(model_config.get("name", "moving_average"), **model_config.get("params", {}))
     model.fit(histories, targets)
-    predictions = [model.predict(history) for history in histories]
+    eval_histories = [list(record["history_ms"]) for record in evaluation_records]
+    _, evaluation_targets = build_feature_matrix(evaluation_records)
+    predictions = [model.predict(history) for history in eval_histories]
 
     summary = {
         "model": model.describe(),
         "record_count": len(records),
+        "training_record_count": len(train_records),
+        "evaluation_record_count": len(evaluation_records),
         "metrics": {
-            "mae_ms": mean_absolute_error(targets, predictions),
+            "mae_ms": mean_absolute_error(evaluation_targets, predictions),
         },
     }
 

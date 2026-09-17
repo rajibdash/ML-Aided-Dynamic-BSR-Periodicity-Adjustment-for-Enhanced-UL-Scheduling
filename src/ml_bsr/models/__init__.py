@@ -12,6 +12,12 @@ class ModelDependencyError(RuntimeError):
     """Raised when an optional ML dependency is unavailable."""
 
 
+def _validate_params(name: str, params: dict[str, object], allowed: set[str]) -> None:
+    unexpected = set(params) - allowed
+    if unexpected:
+        raise ValueError(f"Unsupported parameters for '{name}': {sorted(unexpected)}")
+
+
 class Predictor(ABC):
     name: str
 
@@ -108,8 +114,10 @@ class OptionalBackendPredictor(Predictor):
 def build_model(name: str, **params: object) -> Predictor:
     normalized = name.lower()
     if normalized == 'naive_last_value':
+        _validate_params('naive_last_value', params, set())
         return NaiveLastValuePredictor()
     if normalized == 'moving_average':
+        _validate_params('moving_average', params, {'window'})
         return MovingAveragePredictor(window=int(params.get('window', 3)))
     if normalized == 'svr':
         return OptionalBackendPredictor(

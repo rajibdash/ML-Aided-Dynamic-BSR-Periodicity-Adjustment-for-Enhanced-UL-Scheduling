@@ -34,6 +34,10 @@ class PreprocessingTests(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertTrue(all(item.time_ms > 0.0 for item in first))
 
+    def test_split_records_rejects_invalid_ratios(self) -> None:
+        with self.assertRaises(ValueError):
+            split_records([], ratios=(1.2, -0.1, -0.1))
+
 
 if __name__ == '__main__':
     unittest.main()

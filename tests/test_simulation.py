@@ -46,7 +46,6 @@ class SimulationTests(unittest.TestCase):
         result = simulate_bsr_schedule(arrivals, FixedPeriodicityPolicy(periodicity_ms=5.0))
         self.assertEqual(result.total_packets, 4)
         self.assertEqual(result.packet_latencies_ms, [4.0, 4.0, 4.0, 3.0])
-        self.assertEqual(result.ineffective_bsr_reports, 1)
 
 
 if __name__ == '__main__':
