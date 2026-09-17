@@ -39,7 +39,6 @@ def simulate_bsr_schedule(
     if not normalized:
         return SimulationResult(0, 0, 0, 0.0, [], [])
 
-    arrival_times = [arrival.time_ms for arrival in normalized]
     ue_ids = sorted({arrival.ue_id for arrival in normalized})
     remaining_arrivals_by_ue = {ue_id: 0 for ue_id in ue_ids}
     for arrival in normalized:
@@ -68,15 +67,18 @@ def simulate_bsr_schedule(
         if current_time == inf:
             break
         if (
-            next_arrival_index >= len(arrival_times)
+            next_arrival_index >= len(normalized)
             and all(not ue_state[ue_id]["pending_arrivals"] for ue_id in ue_ids)
             and all(ue_state[ue_id]["trailing_empty_report_counted"] or ue_state[ue_id]["next_bsr_time"] == inf for ue_id in ue_ids)
         ):
             break
-        next_arrival_time = arrival_times[next_arrival_index] if next_arrival_index < len(arrival_times) else inf
+        next_arrival = normalized[next_arrival_index] if next_arrival_index < len(normalized) else None
+        next_arrival_time = next_arrival.time_ms if next_arrival is not None else inf
 
         if next_arrival_time <= current_time:
-            arrival = normalized[next_arrival_index]
+            arrival = next_arrival
+            if arrival is None:
+                break
             state = ue_state[arrival.ue_id]
             state["pending_arrivals"].append(next_arrival_time)
             if state["last_seen_arrival"] is not None:
@@ -110,7 +112,7 @@ def simulate_bsr_schedule(
 
     average_latency = round(sum(latencies) / len(latencies), 6) if latencies else 0.0
     return SimulationResult(
-        total_packets=len(arrival_times),
+        total_packets=len(normalized),
         total_bsr_reports=total_bsr_reports,
         ineffective_bsr_reports=ineffective_bsr_reports,
         average_latency_ms=average_latency,

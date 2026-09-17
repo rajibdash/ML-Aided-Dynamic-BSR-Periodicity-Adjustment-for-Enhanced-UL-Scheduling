@@ -11,14 +11,13 @@ def normalize_arrivals(arrivals: list[PacketArrival]) -> list[PacketArrival]:
 
 def extract_interarrival_times(arrivals: list[PacketArrival]) -> list[float]:
     normalized = normalize_arrivals(arrivals)
-    grouped: dict[str, list[PacketArrival]] = {}
-    for arrival in normalized:
-        grouped.setdefault(arrival.ue_id, []).append(arrival)
+    ue_ids = {arrival.ue_id for arrival in normalized}
+    if len(ue_ids) > 1:
+        raise ValueError("extract_interarrival_times requires arrivals from a single UE")
 
     interarrivals: list[float] = []
-    for ue_arrivals in grouped.values():
-        for previous, current in zip(ue_arrivals, ue_arrivals[1:]):
-            interarrivals.append(round(current.time_ms - previous.time_ms, 6))
+    for previous, current in zip(normalized, normalized[1:]):
+        interarrivals.append(round(current.time_ms - previous.time_ms, 6))
     return interarrivals
 
 

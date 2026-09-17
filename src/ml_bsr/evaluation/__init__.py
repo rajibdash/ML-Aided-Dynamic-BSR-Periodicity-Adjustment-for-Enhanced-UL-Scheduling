@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from ml_bsr.data_ingestion import PacketArrival
 from ml_bsr.policy import AdaptivePeriodicityPolicy, FixedPeriodicityPolicy
+from ml_bsr.preprocessing import build_supervised_records, extract_interarrival_times
 from ml_bsr.simulation import SimulationResult, simulate_bsr_schedule
 
 StrategyType = FixedPeriodicityPolicy | AdaptivePeriodicityPolicy
@@ -30,3 +31,8 @@ def compare_strategies(
             "metrics": summarize_result(result),
         }
     return comparison
+
+
+def build_adaptive_training_records(arrivals: list[PacketArrival], window_size: int) -> list[dict[str, list[float] | float]]:
+    interarrivals = extract_interarrival_times(arrivals)
+    return build_supervised_records(interarrivals, window_size=window_size)

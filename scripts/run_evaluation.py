@@ -7,10 +7,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from ml_bsr.data_ingestion import read_packet_arrivals_csv
-from ml_bsr.evaluation import compare_strategies
+from ml_bsr.evaluation import build_adaptive_training_records, compare_strategies
 from ml_bsr.models import build_model
 from ml_bsr.policy import AdaptivePeriodicityPolicy, FixedPeriodicityPolicy
-from ml_bsr.preprocessing import build_supervised_records, extract_interarrival_times
 from ml_bsr.utils import dump_json, load_json, project_path
 
 
@@ -30,7 +29,7 @@ def main() -> None:
     predictor_config = adaptive_config.get("predictor", {})
     predictor = build_model(predictor_config.get("name", "moving_average"), **predictor_config.get("params", {}))
     adaptive_window_size = int(adaptive_config.get("window_size", 4))
-    training_records = build_supervised_records(extract_interarrival_times(arrivals), window_size=adaptive_window_size)
+    training_records = build_adaptive_training_records(arrivals, window_size=adaptive_window_size)
     if training_records:
         predictor.fit(
             [list(record["history_ms"]) for record in training_records],

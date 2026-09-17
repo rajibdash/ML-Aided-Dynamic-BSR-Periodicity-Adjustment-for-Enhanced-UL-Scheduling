@@ -5,7 +5,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from ml_bsr.data_ingestion import PacketArrival
-from ml_bsr.evaluation import compare_strategies
+from ml_bsr.evaluation import build_adaptive_training_records, compare_strategies
 from ml_bsr.models import MovingAveragePredictor
 from ml_bsr.policy import AdaptivePeriodicityPolicy, FixedPeriodicityPolicy
 from ml_bsr.simulation import simulate_bsr_schedule
@@ -46,6 +46,16 @@ class SimulationTests(unittest.TestCase):
         result = simulate_bsr_schedule(arrivals, FixedPeriodicityPolicy(periodicity_ms=5.0))
         self.assertEqual(result.total_packets, 4)
         self.assertEqual(result.packet_latencies_ms, [4.0, 4.0, 4.0, 3.0])
+
+    def test_adaptive_training_records_reject_multi_ue_arrivals(self) -> None:
+        arrivals = [
+            PacketArrival(time_ms=1.0, ue_id='ue-a'),
+            PacketArrival(time_ms=2.0, ue_id='ue-a'),
+            PacketArrival(time_ms=3.0, ue_id='ue-b'),
+            PacketArrival(time_ms=4.0, ue_id='ue-b'),
+        ]
+        with self.assertRaises(ValueError):
+            build_adaptive_training_records(arrivals, window_size=2)
 
 
 if __name__ == '__main__':

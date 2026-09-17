@@ -38,6 +38,15 @@ class PreprocessingTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             split_records([], ratios=(1.2, -0.1, -0.1))
 
+    def test_extract_interarrivals_rejects_multi_ue_inputs(self) -> None:
+        with self.assertRaises(ValueError):
+            extract_interarrival_times(
+                [
+                    PacketArrival(time_ms=1.0, ue_id='ue-a'),
+                    PacketArrival(time_ms=2.0, ue_id='ue-b'),
+                ]
+            )
+
 
 if __name__ == '__main__':
     unittest.main()
