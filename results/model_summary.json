@@ -1,0 +1,13 @@
+{
+  "evaluation_record_count": 2,
+  "metrics": {
+    "mae_ms": 0.6861666666666677
+  },
+  "model": {
+    "fitted": true,
+    "name": "moving_average",
+    "window": 3
+  },
+  "record_count": 19,
+  "training_record_count": 13
+}
