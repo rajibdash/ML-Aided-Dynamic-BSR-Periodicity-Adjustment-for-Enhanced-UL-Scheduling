@@ -33,6 +33,14 @@ class DynamicBSRAgentTest(unittest.TestCase):
 
         self.assertGreater(normal_periodicity, high_load_periodicity)
 
+    def test_constructor_validates_bounds_and_target_latency(self) -> None:
+        with self.assertRaises(ValueError):
+            DynamicBSRAgent(min_periodicity_ms=90, max_periodicity_ms=80)
+        with self.assertRaises(ValueError):
+            DynamicBSRAgent(min_periodicity_ms=0, max_periodicity_ms=80)
+        with self.assertRaises(ValueError):
+            DynamicBSRAgent(target_latency_ms=0)
+
 
 if __name__ == "__main__":
     unittest.main()

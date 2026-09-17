@@ -28,6 +28,8 @@ def evaluate_baseline(model: dict, samples: Iterable[TrainingSample]) -> dict:
     if not sample_list:
         raise ValueError("At least one sample is required for evaluation.")
 
+    if "baseline_periodicity_ms" not in model:
+        raise ValueError("Model must contain 'baseline_periodicity_ms'.")
     baseline = float(model["baseline_periodicity_ms"])
     mae = sum(abs(sample.label_periodicity_ms - baseline) for sample in sample_list) / len(sample_list)
     return {"mae": mae, "evaluated_samples": len(sample_list)}

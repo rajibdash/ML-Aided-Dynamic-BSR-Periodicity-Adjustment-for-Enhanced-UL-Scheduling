@@ -16,6 +16,12 @@ class DynamicBSRAgent:
         max_periodicity_ms: int = 80,
         target_latency_ms: float = 20.0,
     ) -> None:
+        if min_periodicity_ms <= 0 or max_periodicity_ms <= 0:
+            raise ValueError("Periodicity bounds must be positive integers.")
+        if min_periodicity_ms > max_periodicity_ms:
+            raise ValueError("min_periodicity_ms must be <= max_periodicity_ms.")
+        if target_latency_ms <= 0:
+            raise ValueError("target_latency_ms must be greater than 0.")
         self.min_periodicity_ms = min_periodicity_ms
         self.max_periodicity_ms = max_periodicity_ms
         self.target_latency_ms = target_latency_ms

@@ -24,6 +24,17 @@ File: `mlops.py`
 - `evaluate_baseline`: computes MAE for the baseline.
 - `save_experiment_report`: stores model, metrics, and research goal as JSON.
 
+Example:
+
+```python
+from mlops import TrainingSample, train_baseline, evaluate_baseline, save_experiment_report
+
+samples = [TrainingSample(12, 0.1, 0.5, 35), TrainingSample(20, 0.3, 0.7, 25)]
+model = train_baseline(samples)
+metrics = evaluate_baseline(model, samples)
+save_experiment_report(model, metrics, "Reduce UL latency while controlling overhead", "artifacts/experiment.json")
+```
+
 ## Run Tests
 
 ```bash

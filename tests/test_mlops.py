@@ -22,6 +22,14 @@ class MLOpsPipelineTest(unittest.TestCase):
         self.assertEqual(metrics["evaluated_samples"], 3)
         self.assertGreaterEqual(metrics["mae"], 0.0)
 
+    def test_training_and_evaluation_validate_inputs(self) -> None:
+        with self.assertRaises(ValueError):
+            train_baseline([])
+        with self.assertRaises(ValueError):
+            evaluate_baseline({"baseline_periodicity_ms": 30}, [])
+        with self.assertRaises(ValueError):
+            evaluate_baseline({}, self.samples)
+
     def test_report_contains_research_goal(self) -> None:
         model = train_baseline(self.samples)
         metrics = evaluate_baseline(model, self.samples)
