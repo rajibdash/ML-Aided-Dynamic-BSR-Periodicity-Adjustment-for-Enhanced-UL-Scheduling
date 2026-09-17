@@ -52,16 +52,13 @@ def simulate_bsr_schedule(
             "pending_arrivals": [],
             "last_seen_arrival": None,
             "trailing_empty_report_counted": False,
-            "next_periodicity": ue_policy.next_periodicity([]),
-            "next_bsr_time": ue_policy.next_periodicity([]),
+            "next_periodicity": initial_periodicity,
+            "next_bsr_time": initial_periodicity,
         }
         for ue_id in ue_ids
         for ue_policy in [deepcopy(policy)]
+        for initial_periodicity in [ue_policy.next_periodicity([])]
     }
-    for ue_id in ue_ids:
-        state = ue_state[ue_id]
-        state["next_periodicity"] = state["policy"].next_periodicity([])
-        state["next_bsr_time"] = state["next_periodicity"]
     next_arrival_index = 0
     latencies: list[float] = []
     total_bsr_reports = 0

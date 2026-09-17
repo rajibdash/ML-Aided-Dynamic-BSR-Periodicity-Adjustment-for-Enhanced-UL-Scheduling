@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from math import isclose
 from math import floor
 
 from ml_bsr.data_ingestion import PacketArrival
@@ -9,16 +10,26 @@ def normalize_arrivals(arrivals: list[PacketArrival]) -> list[PacketArrival]:
     return sorted((arrival for arrival in arrivals if arrival.time_ms >= 0.0), key=lambda item: (item.time_ms, item.ue_id))
 
 
-def extract_interarrival_times(arrivals: list[PacketArrival]) -> list[float]:
+def extract_interarrival_times_by_ue(arrivals: list[PacketArrival]) -> dict[str, list[float]]:
     normalized = normalize_arrivals(arrivals)
-    ue_ids = {arrival.ue_id for arrival in normalized}
-    if len(ue_ids) > 1:
-        raise ValueError("extract_interarrival_times requires arrivals from a single UE")
+    grouped: dict[str, list[PacketArrival]] = {}
+    for arrival in normalized:
+        grouped.setdefault(arrival.ue_id, []).append(arrival)
 
-    interarrivals: list[float] = []
-    for previous, current in zip(normalized, normalized[1:]):
-        interarrivals.append(round(current.time_ms - previous.time_ms, 6))
-    return interarrivals
+    interarrivals_by_ue: dict[str, list[float]] = {}
+    for ue_id, ue_arrivals in grouped.items():
+        interarrivals_by_ue[ue_id] = [
+            round(current.time_ms - previous.time_ms, 6)
+            for previous, current in zip(ue_arrivals, ue_arrivals[1:])
+        ]
+    return interarrivals_by_ue
+
+
+def extract_interarrival_times(arrivals: list[PacketArrival]) -> list[float]:
+    interarrivals_by_ue = extract_interarrival_times_by_ue(arrivals)
+    if len(interarrivals_by_ue) > 1:
+        raise ValueError("extract_interarrival_times requires arrivals from a single UE")
+    return next(iter(interarrivals_by_ue.values()), [])
 
 
 def build_supervised_records(interarrivals_ms: list[float], window_size: int) -> list[dict[str, list[float] | float]]:
@@ -40,7 +51,7 @@ def split_records(
         raise ValueError("split_records requires exactly three ratios")
     if any(ratio < 0.0 or ratio > 1.0 for ratio in ratios):
         raise ValueError("Split ratios must be between 0 and 1")
-    if round(sum(ratios), 6) != 1.0:
+    if not isclose(sum(ratios), 1.0, rel_tol=1e-9, abs_tol=1e-9):
         raise ValueError("Split ratios must sum to 1.0")
     total = len(records)
     train_end = floor(total * ratios[0])

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ml_bsr.data_ingestion import PacketArrival
 from ml_bsr.policy import AdaptivePeriodicityPolicy, FixedPeriodicityPolicy
-from ml_bsr.preprocessing import build_supervised_records, extract_interarrival_times
+from ml_bsr.preprocessing import build_supervised_records, extract_interarrival_times, extract_interarrival_times_by_ue
 from ml_bsr.simulation import SimulationResult, simulate_bsr_schedule
 
 StrategyType = FixedPeriodicityPolicy | AdaptivePeriodicityPolicy
@@ -44,8 +44,6 @@ def build_adaptive_training_records(
         return build_supervised_records(interarrivals, window_size=window_size)
 
     records: list[dict[str, list[float] | float]] = []
-    for current_ue_id in sorted({arrival.ue_id for arrival in arrivals}):
-        filtered_arrivals = [arrival for arrival in arrivals if arrival.ue_id == current_ue_id]
-        interarrivals = extract_interarrival_times(filtered_arrivals)
+    for current_ue_id, interarrivals in sorted(extract_interarrival_times_by_ue(arrivals).items()):
         records.extend(build_supervised_records(interarrivals, window_size=window_size))
     return records

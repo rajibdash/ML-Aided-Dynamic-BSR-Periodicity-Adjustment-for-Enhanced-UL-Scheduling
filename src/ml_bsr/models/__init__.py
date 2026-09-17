@@ -163,6 +163,9 @@ class TensorFlowLSTMPredictor(Predictor):
 
         if not histories:
             raise ValueError("histories must not be empty")
+        history_lengths = {len(history) for history in histories}
+        if len(history_lengths) != 1:
+            raise ValueError("All histories must have the same length for 'lstm'")
         self.history_length_ = len(histories[0])
         x_train = np.array(histories, dtype="float32").reshape(len(histories), self.history_length_, 1)
         y_train = np.array(targets, dtype="float32")

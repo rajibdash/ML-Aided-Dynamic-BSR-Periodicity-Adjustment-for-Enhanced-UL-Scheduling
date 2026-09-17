@@ -73,6 +73,14 @@ class SimulationTests(unittest.TestCase):
             {'history_ms': [3.0], 'target_ms': 4.0},
         ])
 
+    def test_adaptive_training_records_return_empty_for_unknown_ue(self) -> None:
+        arrivals = [
+            PacketArrival(time_ms=1.0, ue_id='ue-a'),
+            PacketArrival(time_ms=2.0, ue_id='ue-a'),
+        ]
+        records = build_adaptive_training_records(arrivals, window_size=1, ue_id='ue-missing')
+        self.assertEqual(records, [])
+
 
 if __name__ == '__main__':
     unittest.main()
