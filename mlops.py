@@ -2,6 +2,7 @@ import json
 from collections.abc import Mapping
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
+from os import PathLike
 from pathlib import Path
 from typing import Iterable
 
@@ -18,6 +19,12 @@ class TrainingSample:
 class BaselineModel:
     baseline_periodicity_ms: float
     trained_samples: int
+
+
+@dataclass(frozen=True)
+class EvaluationMetrics:
+    mae: float
+    evaluated_samples: int
 
 
 def train_baseline(samples: Iterable[TrainingSample]) -> BaselineModel:
@@ -41,19 +48,24 @@ def _extract_baseline_value(model: BaselineModel | Mapping[str, object]) -> floa
         raise ValueError("'baseline_periodicity_ms' must be numeric.") from exc
 
 
-def evaluate_baseline(model: BaselineModel | Mapping[str, object], samples: Iterable[TrainingSample]) -> dict:
+def evaluate_baseline(
+    model: BaselineModel | Mapping[str, object], samples: Iterable[TrainingSample]
+) -> EvaluationMetrics:
     sample_list = list(samples)
     if not sample_list:
         raise ValueError("At least one sample is required for evaluation.")
 
     baseline = _extract_baseline_value(model)
     mae = sum(abs(sample.label_periodicity_ms - baseline) for sample in sample_list) / len(sample_list)
-    return {"mae": mae, "evaluated_samples": len(sample_list)}
+    return EvaluationMetrics(mae=mae, evaluated_samples=len(sample_list))
 
 
 def save_experiment_report(
-    model: BaselineModel | Mapping[str, object], metrics: Mapping[str, object], research_goal: str, output_path: str
-) -> str:
+    model: BaselineModel | Mapping[str, object],
+    metrics: EvaluationMetrics | Mapping[str, object],
+    research_goal: str,
+    output_path: str | PathLike[str],
+) -> Path:
     if isinstance(model, BaselineModel):
         model_payload = asdict(model)
     elif isinstance(model, Mapping):
@@ -61,14 +73,18 @@ def save_experiment_report(
     else:
         raise ValueError("Model must be a BaselineModel or mapping with JSON-serializable values.")
 
-    if not isinstance(metrics, Mapping):
+    if isinstance(metrics, EvaluationMetrics):
+        metrics_payload = asdict(metrics)
+    elif isinstance(metrics, Mapping):
+        metrics_payload = dict(metrics)
+    else:
         raise ValueError("Metrics must be a mapping with JSON-serializable values.")
 
     report = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "research_goal": research_goal,
         "model": model_payload,
-        "metrics": dict(metrics),
+        "metrics": metrics_payload,
     }
     destination = Path(output_path)
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -77,7 +93,7 @@ def save_experiment_report(
     except TypeError as exc:
         raise ValueError("Model and metrics must be JSON-serializable.") from exc
     destination.write_text(serialized_report, encoding="utf-8")
-    return str(destination)
+    return destination
 
 
 def serialize_samples(samples: Iterable[TrainingSample]) -> list[dict]:

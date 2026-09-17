@@ -41,6 +41,7 @@ File: `mlops.py`
 - `train_baseline`: builds a baseline model from samples.
 - `evaluate_baseline`: computes MAE for the baseline.
 - `save_experiment_report`: stores model, metrics, and research goal as JSON.
+- `serialize_samples`: converts training samples to dictionary payloads.
 
 Example:
 
