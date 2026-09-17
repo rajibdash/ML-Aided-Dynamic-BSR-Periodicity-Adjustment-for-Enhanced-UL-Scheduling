@@ -172,6 +172,8 @@ class TensorFlowLSTMPredictor(Predictor):
     def predict(self, history_ms: list[float]) -> float:
         if self.model_ is None or self.history_length_ is None:
             raise RuntimeError("Model 'lstm' has not been fitted")
+        if not history_ms:
+            raise ValueError("history_ms must not be empty")
         try:
             import numpy as np
         except Exception as exc:

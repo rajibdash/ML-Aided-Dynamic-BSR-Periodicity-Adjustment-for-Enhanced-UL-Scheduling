@@ -52,6 +52,8 @@ def simulate_bsr_schedule(
     last_seen_arrival_by_ue: dict[str, float] = {}
 
     while next_arrival_index < len(arrival_times) or pending_arrivals:
+        if current_time == inf:
+            break
         next_arrival_time = arrival_times[next_arrival_index] if next_arrival_index < len(arrival_times) else inf
 
         if next_arrival_time <= current_time:
@@ -74,9 +76,7 @@ def simulate_bsr_schedule(
         next_periodicity = policy.next_periodicity(observed_interarrivals)
         selected_periodicities.append(next_periodicity)
         if next_periodicity == inf:
-            current_time = next_arrival_time if next_arrival_time != inf else inf
-            if current_time == inf:
-                break
+            current_time = inf
         else:
             current_time += next_periodicity
 

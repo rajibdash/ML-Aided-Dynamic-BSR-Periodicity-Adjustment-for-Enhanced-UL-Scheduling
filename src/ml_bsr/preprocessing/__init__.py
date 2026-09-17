@@ -6,7 +6,7 @@ from ml_bsr.data_ingestion import PacketArrival
 
 
 def normalize_arrivals(arrivals: list[PacketArrival]) -> list[PacketArrival]:
-    return sorted((arrival for arrival in arrivals if arrival.time_ms >= 0.0), key=lambda item: (item.ue_id, item.time_ms))
+    return sorted((arrival for arrival in arrivals if arrival.time_ms >= 0.0), key=lambda item: (item.time_ms, item.ue_id))
 
 
 def extract_interarrival_times(arrivals: list[PacketArrival]) -> list[float]:

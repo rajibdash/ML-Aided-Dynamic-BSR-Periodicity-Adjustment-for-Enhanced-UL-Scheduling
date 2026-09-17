@@ -10,6 +10,7 @@ from ml_bsr.data_ingestion import read_packet_arrivals_csv
 from ml_bsr.evaluation import compare_strategies
 from ml_bsr.models import build_model
 from ml_bsr.policy import AdaptivePeriodicityPolicy, FixedPeriodicityPolicy
+from ml_bsr.preprocessing import build_supervised_records, extract_interarrival_times
 from ml_bsr.utils import dump_json, load_json, project_path
 
 
@@ -27,8 +28,16 @@ def main() -> None:
 
     adaptive_config = config.get("adaptive", {})
     predictor_config = adaptive_config.get("predictor", {})
+    predictor = build_model(predictor_config.get("name", "moving_average"), **predictor_config.get("params", {}))
+    adaptive_window_size = int(adaptive_config.get("window_size", 4))
+    training_records = build_supervised_records(extract_interarrival_times(arrivals), window_size=adaptive_window_size)
+    if training_records:
+        predictor.fit(
+            [list(record["history_ms"]) for record in training_records],
+            [float(record["target_ms"]) for record in training_records],
+        )
     strategies["adaptive"] = AdaptivePeriodicityPolicy(
-        predictor=build_model(predictor_config.get("name", "moving_average"), **predictor_config.get("params", {})),
+        predictor=predictor,
         bootstrap_periodicity_ms=float(adaptive_config.get("bootstrap_periodicity_ms", 10.0)),
         guard_factor=float(adaptive_config.get("guard_factor", 0.9)),
     )

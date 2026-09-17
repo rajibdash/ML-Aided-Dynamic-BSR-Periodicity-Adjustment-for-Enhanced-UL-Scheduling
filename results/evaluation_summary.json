@@ -84,7 +84,7 @@
       "bootstrap_periodicity_ms": 10.0,
       "guard_factor": 0.9,
       "predictor": {
-        "fitted": false,
+        "fitted": true,
         "name": "moving_average",
         "window": 3
       },
