@@ -33,7 +33,7 @@ recommended_periodicity_ms = agent.recommend_periodicity(state)
 print(recommended_periodicity_ms)
 ```
 
-## ML Ops Module
+## mlops Module
 
 File: `mlops.py`
 

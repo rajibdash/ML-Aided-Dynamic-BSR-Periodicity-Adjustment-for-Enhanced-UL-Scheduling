@@ -30,6 +30,8 @@ class MLOpsPipelineTest(unittest.TestCase):
             evaluate_baseline({"baseline_periodicity_ms": 30}, [])
         with self.assertRaises(ValueError):
             evaluate_baseline({}, self.samples)
+        with self.assertRaises(ValueError):
+            evaluate_baseline(None, self.samples)  # type: ignore[arg-type]
 
     def test_report_contains_research_goal(self) -> None:
         model = train_baseline(self.samples)
@@ -60,6 +62,14 @@ class MLOpsPipelineTest(unittest.TestCase):
                 }
             ],
         )
+
+    def test_save_report_validates_serializable_payloads(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_path = str(Path(temp_dir) / "reports" / "experiment.json")
+            with self.assertRaises(ValueError):
+                save_experiment_report(None, {"mae": 1.0}, "goal", output_path)  # type: ignore[arg-type]
+            with self.assertRaises(ValueError):
+                save_experiment_report({"baseline_periodicity_ms": 10}, {"obj": object()}, "goal", output_path)
 
 
 if __name__ == "__main__":
