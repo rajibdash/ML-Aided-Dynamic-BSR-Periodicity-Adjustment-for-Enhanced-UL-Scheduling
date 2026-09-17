@@ -14,14 +14,13 @@ class DynamicBSRAgentTest(unittest.TestCase):
 
         self.assertGreater(calm_periodicity, urgent_periodicity)
 
-    def test_recommendation_is_clamped(self) -> None:
+    def test_recommendation_hits_lower_clamp(self) -> None:
         agent = DynamicBSRAgent(min_periodicity_ms=5, max_periodicity_ms=80)
-        extreme_state = BSRState(200_000, 120.0, 10.0, 0.20)
+        extreme_state = BSRState(200_000, 400.0, 100.0, 0.90)
 
         recommendation = agent.recommend_periodicity(extreme_state)
 
-        self.assertGreaterEqual(recommendation, 5)
-        self.assertLessEqual(recommendation, 80)
+        self.assertEqual(recommendation, 5)
 
     def test_high_load_makes_recommendation_more_aggressive(self) -> None:
         agent = DynamicBSRAgent()

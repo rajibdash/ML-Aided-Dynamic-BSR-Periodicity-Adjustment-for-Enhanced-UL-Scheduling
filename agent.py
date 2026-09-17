@@ -33,7 +33,7 @@ class DynamicBSRAgent:
         load_factor = 1.15 if state.cell_load_ratio > 0.85 else 1.0
 
         urgency = (0.6 * latency_factor + 0.4 * growth_factor) * queue_factor * load_factor
-        recommendation = round(self.max_periodicity_ms / (1.0 + urgency))
+        recommendation = int(self.max_periodicity_ms / (1.0 + urgency))
         recommendation = max(self.min_periodicity_ms, recommendation)
         recommendation = min(self.max_periodicity_ms, recommendation)
         return int(recommendation)

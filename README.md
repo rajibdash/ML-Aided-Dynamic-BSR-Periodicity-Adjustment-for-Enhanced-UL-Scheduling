@@ -1,6 +1,6 @@
 # ML-Aided-Dynamic-BSR-Periodicity-Adjustment-for-Enhanced-UL-Scheduling
 
-This repository now includes a minimal **Agent** module and a minimal **ML Ops (`mlops.py`)** module for ML-aided dynamic BSR periodicity experiments.
+This repository includes a minimal **Agent** module and a minimal **ML Ops (`mlops.py`)** module for ML-aided dynamic BSR periodicity experiments.
 
 ## Setup
 
@@ -47,7 +47,10 @@ Example:
 ```python
 from mlops import TrainingSample, train_baseline, evaluate_baseline, save_experiment_report
 
-samples = [TrainingSample(12, 0.1, 0.5, 35), TrainingSample(20, 0.3, 0.7, 25)]
+samples = [
+    TrainingSample(latency_ms=12, buffer_growth_rate=0.1, cell_load_ratio=0.5, label_periodicity_ms=35),
+    TrainingSample(latency_ms=20, buffer_growth_rate=0.3, cell_load_ratio=0.7, label_periodicity_ms=25),
+]
 model = train_baseline(samples)
 metrics = evaluate_baseline(model, samples)
 save_experiment_report(model, metrics, "Reduce UL latency while controlling overhead", "artifacts/experiment.json")
