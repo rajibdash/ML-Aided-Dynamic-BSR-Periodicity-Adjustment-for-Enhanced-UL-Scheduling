@@ -29,7 +29,11 @@ def main() -> None:
     predictor_config = adaptive_config.get("predictor", {})
     predictor = build_model(predictor_config.get("name", "moving_average"), **predictor_config.get("params", {}))
     adaptive_window_size = int(adaptive_config.get("window_size", 4))
-    training_records = build_adaptive_training_records(arrivals, window_size=adaptive_window_size)
+    training_records = build_adaptive_training_records(
+        arrivals,
+        window_size=adaptive_window_size,
+        ue_id=adaptive_config.get("training_ue_id"),
+    )
     if training_records:
         predictor.fit(
             [list(record["history_ms"]) for record in training_records],

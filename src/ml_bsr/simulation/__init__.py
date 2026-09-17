@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass
 from math import inf
 
@@ -46,15 +47,20 @@ def simulate_bsr_schedule(
 
     ue_state = {
         ue_id: {
+            "policy": deepcopy(policy),
             "observed_interarrivals": [],
             "pending_arrivals": [],
             "last_seen_arrival": None,
             "trailing_empty_report_counted": False,
-            "next_periodicity": policy.next_periodicity([]),
-            "next_bsr_time": policy.next_periodicity([]),
+            "next_periodicity": deepcopy(policy).next_periodicity([]),
+            "next_bsr_time": deepcopy(policy).next_periodicity([]),
         }
         for ue_id in ue_ids
     }
+    for ue_id in ue_ids:
+        state = ue_state[ue_id]
+        state["next_periodicity"] = state["policy"].next_periodicity([])
+        state["next_bsr_time"] = state["next_periodicity"]
     next_arrival_index = 0
     latencies: list[float] = []
     total_bsr_reports = 0
@@ -102,7 +108,7 @@ def simulate_bsr_schedule(
             if remaining_arrivals_by_ue[next_bsr_ue] == 0:
                 state["trailing_empty_report_counted"] = True
 
-        next_periodicity = policy.next_periodicity(list(state["observed_interarrivals"]))
+        next_periodicity = state["policy"].next_periodicity(list(state["observed_interarrivals"]))
         selected_periodicities.append(next_periodicity)
         state["next_periodicity"] = next_periodicity
         if next_periodicity == inf or (state["trailing_empty_report_counted"] and remaining_arrivals_by_ue[next_bsr_ue] == 0):

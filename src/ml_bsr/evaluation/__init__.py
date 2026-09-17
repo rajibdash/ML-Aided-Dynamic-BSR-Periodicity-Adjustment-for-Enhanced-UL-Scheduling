@@ -33,6 +33,11 @@ def compare_strategies(
     return comparison
 
 
-def build_adaptive_training_records(arrivals: list[PacketArrival], window_size: int) -> list[dict[str, list[float] | float]]:
-    interarrivals = extract_interarrival_times(arrivals)
+def build_adaptive_training_records(
+    arrivals: list[PacketArrival],
+    window_size: int,
+    ue_id: str | None = None,
+) -> list[dict[str, list[float] | float]]:
+    filtered_arrivals = [arrival for arrival in arrivals if ue_id is None or arrival.ue_id == ue_id]
+    interarrivals = extract_interarrival_times(filtered_arrivals)
     return build_supervised_records(interarrivals, window_size=window_size)

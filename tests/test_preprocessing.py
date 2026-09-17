@@ -37,6 +37,8 @@ class PreprocessingTests(unittest.TestCase):
     def test_split_records_rejects_invalid_ratios(self) -> None:
         with self.assertRaises(ValueError):
             split_records([], ratios=(1.2, -0.1, -0.1))
+        with self.assertRaises(ValueError):
+            split_records([], ratios=(1.0,))
 
     def test_extract_interarrivals_rejects_multi_ue_inputs(self) -> None:
         with self.assertRaises(ValueError):

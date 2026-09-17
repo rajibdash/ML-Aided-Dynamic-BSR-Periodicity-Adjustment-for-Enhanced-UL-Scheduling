@@ -141,6 +141,7 @@ def build_model(name: str, **params: object) -> Predictor:
             estimator_kwargs=params,
         )
     if normalized == 'lstm':
+        _validate_params('lstm', params, {'epochs', 'batch_size'})
         return TensorFlowLSTMPredictor(**params)
     raise ValueError(f'Unsupported model: {name}')
 
