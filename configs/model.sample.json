@@ -1,0 +1,10 @@
+{
+  "dataset_path": "data/processed/sample_dataset.json",
+  "model": {
+    "name": "moving_average",
+    "params": {
+      "window": 3
+    }
+  },
+  "output_path": "results/model_summary.json"
+}

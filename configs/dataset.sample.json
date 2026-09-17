@@ -1,0 +1,9 @@
+{
+  "mode": "synthetic",
+  "count": 24,
+  "base_interval_ms": 10.0,
+  "jitter_ms": 2.0,
+  "seed": 7,
+  "window_size": 4,
+  "output_path": "data/processed/sample_dataset.json"
+}

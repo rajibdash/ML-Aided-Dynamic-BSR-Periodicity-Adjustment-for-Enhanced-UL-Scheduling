@@ -1,0 +1,16 @@
+{
+  "input_path": "data/samples/sample_trace.csv",
+  "grant_processing_ms": 1.0,
+  "fixed_periodicities_ms": [5.0, 10.0, 20.0],
+  "adaptive": {
+    "bootstrap_periodicity_ms": 10.0,
+    "guard_factor": 0.9,
+    "predictor": {
+      "name": "moving_average",
+      "params": {
+        "window": 3
+      }
+    }
+  },
+  "output_path": "results/evaluation_summary.json"
+}
