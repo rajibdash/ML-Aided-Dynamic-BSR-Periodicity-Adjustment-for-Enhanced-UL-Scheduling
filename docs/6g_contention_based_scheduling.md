@@ -49,7 +49,8 @@ To break this bottleneck, **6G architectures shift toward native Contention-Base
    |---- 3b. Re-transmission on CB-PUSCH Pool ----------------->|
 
 ```
-[**This below description needs to be improved**]
+[**This below description needs to be improved**]</br>
+
 When packet arrivals are unpredictable, a UE must notify the network of its buffer size immediately. 6G optimizes this using two core contention-based approaches for BSR:
 
 ### A. Non-Orthogonal Multiple Access (NOMA) Based BSR
