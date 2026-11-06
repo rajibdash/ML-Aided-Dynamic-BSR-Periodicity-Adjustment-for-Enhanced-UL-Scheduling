@@ -8,6 +8,43 @@ As the industry transitions toward **6G applications**—such as multi-sensory E
 To break this bottleneck, **6G architectures shift toward native Contention-Based (CB) or Grant-Free (GF) mechanisms** for both BSR reporting and Small Data Transmission (SDT). By allowing User Equipments (UEs) to autonomously transmit data or buffer states on shared radio resources without waiting for dedicated base station (gNB/6G NodeB) scheduling, the handshake latency is completely eliminated.
 
 ---
+**Architectural Framework**
+
+```
++-------------------------------------------------------------+
+|                                                             |
+|                    [6G aNB / gNB (DU)]                      |
+|                                                             |
+|   +-----------------------------------------------------+   |
+|   | MAC Layer (Dynamic Scheduler)                       |   |
+|   | - Configures Shared CB-BSR Resource Pools           |   |
+|   | - Resolves Collisions via Soft-Combining / Multi-ID |   |
+|   +-----------------------------------------------------+   |
+|                              |                              |
+|                              v                              |
+|   +-----------------------------------------------------+   |
+|   | PHY Layer (Contention-Based PUSCH / Mini-Slots)     |   |
+|   | - Decodes Multi-user Shared Orthogonal Resources    |   |
+|   +-----------------------------------------------------+   |
++-------------------------------------------------------------+
+                               ^
+                               | 6G Uu Air Interface
+                               v
++-------------------------------------------------------------+
+|                                                             |
+|                      [6G Client UE]                         |
+|                                                             |
+|  +-------------------------------------------------------+  |
+|  | Predictive Engine (AI / Statistical L2 Buffer Monitor)|  |
+|  +-------------------------------------------------------+  |
+|                              |                              |
+|                              v                              |
+|   +-----------------------------------------------------+   |
+|   | MAC Layer (Autonomous CB-BSR Mapping & Backoff)     |   |
+|   +-----------------------------------------------------+   |
++-------------------------------------------------------------+
+
+```
 
 ## 2. Structural Comparison: Grant-Based vs. Contention-Based Uplink
 
@@ -49,6 +86,16 @@ To break this bottleneck, **6G architectures shift toward native Contention-Base
    |---- 3b. Re-transmission on CB-PUSCH Pool ----------------->|
 
 ```
+
+**Execution Steps:**
+
+* 1. **Resource Pool Allocation**: The 6G base station allocates periodic, shared contention-based physical uplink shared channel (CB-PUSCH) resource blocks across specific time/frequency slots. Hundreds of sparse multi-broadband (MBB) or Ultra-Reliable Low-Latency Communication (URLLC) users share these resources.
+* 2. **Transmission Triggering**: Upon packet arrival or an AI-driven predictive buffer event, the UE directly maps its buffer volume estimate and timing criteria into a modified 6G BSR MAC Control Element (MAC CE). It transmits this report immediately along with an initial chunk of user data in the next available CB-PUSCH slot, bypassing the handshake.
+* 3. **Collision Handling & Resolution:**
+   * Spatial Separation: The gNB uses advanced multi-panel MIMO and unique Demodulation Reference Signals (DMRS) selected randomly by the UE to blind-decode colliding transmissions simultaneously.
+   * Soft Combining: If decoding fails due to destructive collision, the gNB caches the received waveform energy to perform soft combining with subsequent UE re-transmissions.
+   * Backoff Scheme: If no acknowledgment or explicit dynamic grant is received within a strict cb-BSR-Window, the UE applies an exponential slot backoff bounded by traffic priority (Logical Channel Groups)
+
 [**This below description needs to be improved**]</br>
 
 When packet arrivals are unpredictable, a UE must notify the network of its buffer size immediately. 6G optimizes this using two core contention-based approaches for BSR:
