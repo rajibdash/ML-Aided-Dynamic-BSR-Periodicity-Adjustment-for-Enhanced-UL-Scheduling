@@ -23,6 +23,33 @@ To break this bottleneck, **6G architectures shift toward native Contention-Base
 
 ## 3. Deep-Dive: Contention-Based Mechanisms for BSR Delivery
 
+```
+
+[6G UE]                                                   [6G gNB/aNB]
+   |                                                            |
+   |                                                            |
+   |---- 1. RRC Configuration / SIB (Pool Allocation) --------->|
+   |                                                            |
+   | [Data Enters L2 Buffer OR AI Context Forecast Triggered]   |
+   | [Selects Transmit Opportunity & Random Signature/DMRS]     |
+   |                                                            |
+   |---- 2. CB-PUSCH (CB-BSR MAC CE + Data Payload) ----------->|
+   |                                                            |
+   |                                     [Case A: No Collision] |
+   |                                   [Decodes BSR & Allocates]|
+   |                                                            |
+   |<--- 3a. Downlink Feedback / UL Grant (DCI) ----------------|
+   |                                                            |
+   |                                     [Case B: Collision]    |
+   |                                     [Applies Soft-Combining]
+   |                                                            |
+   |                                     [Or Detects Loss]      |
+   | [Timer Expired / NACK Received]                            |
+   | [Executes Exponential Backoff]                             |
+   |---- 3b. Re-transmission on CB-PUSCH Pool ----------------->|
+
+```
+[**This below description needs to be improved**]
 When packet arrivals are unpredictable, a UE must notify the network of its buffer size immediately. 6G optimizes this using two core contention-based approaches for BSR:
 
 ### A. Non-Orthogonal Multiple Access (NOMA) Based BSR
